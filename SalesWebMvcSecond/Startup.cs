@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using SalesWebMvcSecond.Models;
+using SalesWebMvcSecond.Data;
+using SalesWebMvcSecond.Services;
 
 namespace SalesWebMvcSecond
 {
@@ -39,14 +41,18 @@ namespace SalesWebMvcSecond
             services.AddDbContext<SalesWebMvcSecondContext>(options =>
                     options.UseMySql(Configuration.GetConnectionString("SalesWebMvcSecondContext"), builder =>
                     builder.MigrationsAssembly("SalesWebMvcSecond")));
+
+            services.AddScoped<SeedingService>();
+            services.AddScoped<SellerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, SeedingService seedingService)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                seedingService.Seed();
             }
             else
             {
